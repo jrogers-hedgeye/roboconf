@@ -27,20 +27,20 @@ function roboconf-bundler1 {
   roboconf-check gem
   gem install bundler -v 1.17.3 --no-rdoc --no-ri
   # shellcheck disable=SC2086
-  roboconf-bundler-install $1
+  roboconf-bundler-install $*
 }
 
 function roboconf-bundler {
   roboconf-bundler-prepare
   # shellcheck disable=SC2086
-  roboconf-bundler-install $1
+  roboconf-bundler-install $*
 }
 
 function roboconf-bundler-dev {
   roboconf-bundler-prepare
   roboconf-bundler-without
   # shellcheck disable=SC2086
-  roboconf-bundler-install $1
+  roboconf-bundler-install $*
 }
 
 function roboconf-bundler-prepare {
@@ -51,7 +51,7 @@ function roboconf-bundler-prepare {
 
 function roboconf-bundler-install {
   # shellcheck disable=SC2086
-  bundle install $1
+  bundle install $*
 }
 
 function roboconf-bundler-without {
