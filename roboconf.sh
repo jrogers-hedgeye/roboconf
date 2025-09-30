@@ -2,8 +2,43 @@
 
 echo "Begin loading roboconf functions..."
 
+function banner() {
+  # Example use: banner "Flibberty-gibbiting..."
+  local text="$1"
+  local bg=${2:-2}
+  local fg=${3:-0}
+  local target_width=80
+
+  echo
+
+  # Set colors
+  tput setab "$bg"
+  tput setaf "$fg"
+
+  # Calculate padding for centering
+  local text_length=${#text}
+
+  if [ $text_length -lt $target_width ]; then
+    # Calculate left and right padding
+    local total_padding=$((target_width - text_length))
+    local left_padding=$((total_padding / 2))
+    local right_padding=$((total_padding - left_padding))
+
+    # Print with centered text
+    printf "%*s%s%*s" $left_padding "" "$text" $right_padding ""
+  else
+    # banner is longer than or equal to target width, just print it
+    printf "%s" "$text"
+  fi
+
+  # Reset formatting and clear to end of line
+  tput sgr0
+  tput el
+  echo
+}
+
 function roboconf-check {
-  echo -n "checking for $1... "
+  banner "checking for $1... "
   hash "$1" 2>&- || {
     echo 'no'
     exit 1
@@ -15,6 +50,7 @@ function roboconf-check {
 # this function only checks out what the current parent project "thinks" are the
 # current submodule SHAs.
 function check_out_current_project_shas {
+  banner "Checking out current project SHAs..."
   roboconf-check git
   git submodule init
   git submodule sync
@@ -37,6 +73,7 @@ function roboconf-bundler {
 }
 
 function roboconf-bundler-dev {
+  banner "Bundling dev environment..."
   roboconf-bundler-prepare
   roboconf-bundler-without
   # shellcheck disable=SC2086
@@ -59,17 +96,20 @@ function roboconf-bundler-without {
 }
 
 function roboconf-npm {
+  banner "Installing node/npm deps..."
   roboconf-check node
   roboconf-check npm
   npm install
 }
 
 function roboconf-rails-activerecord {
+  banner "Migrating..."
   bundle exec rake db:create
   bundle exec rake db:migrate
 }
 
 function roboconf-padrino-activerecord {
+  banner "Migrating..."
   bundle exec padrino rake ar:create
   bundle exec padrino rake ar:create -e test
   bundle exec padrino rake ar:migrate
@@ -77,7 +117,13 @@ function roboconf-padrino-activerecord {
   bundle exec padrino rake seed
 }
 
+function roboconf-rails-schema-updates {
+  banner "Migrating..."
+  bin/rails db:migrate db:test:prepare
+}
+
 function roboconf-passenger {
+  banner "Restarting server..."
   mkdir -p tmp
   touch tmp/restart.txt
 }
