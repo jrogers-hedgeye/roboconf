@@ -38,7 +38,6 @@ function banner() {
 }
 
 function roboconf-check {
-  banner "checking for $1... "
   hash "$1" 2>&- || {
     echo 'no'
     exit 1
